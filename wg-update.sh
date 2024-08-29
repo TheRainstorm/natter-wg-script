@@ -27,6 +27,15 @@ sed -i "/$HOST_WG_PUB_KEY/,/^config/{
 ifconfig $WG_IF down && ifup $WG_IF
 EOF
 
+pid=$(pgrep -f 'python natter.py')
+
+if [ -z "$pid" ]; then
+  echo "No process found for 'python natter.py'"
+else
+  echo "Killing process $pid"
+  kill -9 $pid
+fi
+
 echo "restart host wg interface"
 ifconfig $HOST_WG_IF down && ifup $HOST_WG_IF
 
