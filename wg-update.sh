@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+# Natter passed args
 PROT=$1
 LOCAL_IP=$2
 LOCAL_PORT=$3
@@ -16,13 +17,11 @@ if [ $PROT != "udp" ]; then
 fi
 
 echo "run remote commands"
-ssh $REMOTE "bash -s" <<EOF
-sed -i "/$HOST_WG_PUB_KEY/,/^config/{
-    s/option endpoint_port.*/option endpoint_port '$PUBLIC_PORT'/
-    s/option endpoint_host.*/option endpoint_host '$PUBLIC_IP'/
+ssh $REMOTE "sh -s" <<EOF
+sed -i "\#$HOST_WG_PUB_KEY#,/^config/{
+    s|option endpoint_port.*|option endpoint_port '$PUBLIC_PORT'|
+    s|option endpoint_host.*|option endpoint_host '$PUBLIC_IP'|
 }" "/etc/config/network"
-
-#wg set $WG_IF peer $HOST_WG_PUB_KEY endpoint $PUBLIC_IP:$PUBLIC_PORT
 
 ifconfig $WG_IF down && ifup $WG_IF
 EOF
