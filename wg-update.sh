@@ -36,7 +36,7 @@ sed -i "/config wireguard_$WG_IF/,/^config/{
 ifconfig $WG_IF down && ifup $WG_IF
 EOF
 
-pid=$(pgrep -f 'python natter.py')
+pid=$(pgrep -f 'natter.py')
 
 if [ -z "$pid" ]; then
   echo "No process found for 'python natter.py'"
