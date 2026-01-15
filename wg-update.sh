@@ -17,11 +17,21 @@ if [ $PROT != "udp" ]; then
 fi
 
 echo "run remote commands"
+
+cat <<EOF
+sed -i "/config wireguard_$WG_IF/,/^config/{
+  \#$HOST_WG_PUB_KEY#,/^config/{
+      s|option endpoint_port.*|option endpoint_port '$PUBLIC_PORT'|
+          s|option endpoint_host.*|option endpoint_host '$PUBLIC_IP'|
+	  }}" "/etc/config/network"
+EOF
+
 ssh $REMOTE "sh -s" <<EOF
-sed -i "\#$HOST_WG_PUB_KEY#,/^config/{
+sed -i "/config wireguard_$WG_IF/,/^config/{
+  \#$HOST_WG_PUB_KEY#,/^config/{
     s|option endpoint_port.*|option endpoint_port '$PUBLIC_PORT'|
     s|option endpoint_host.*|option endpoint_host '$PUBLIC_IP'|
-}" "/etc/config/network"
+}}" "/etc/config/network"
 
 ifconfig $WG_IF down && ifup $WG_IF
 EOF
